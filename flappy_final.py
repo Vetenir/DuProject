@@ -3,14 +3,19 @@ import random
 import sys
 import pygame
 from pygame.locals import *
+import time
 
+
+# 변수 초기화
+enemy_spawn_interval = 5  # 적 생성 간격(초)
+last_enemy_spawn_time = time.time()  # 마지막으로 적이 생성된 시간
 FPS = 30
 SCREENWIDTH  = 288
 SCREENHEIGHT = 512
 PIPEGAPSIZE  = 100 # gap between upper and lower part of pipe
 BASEY        = SCREENHEIGHT * 0.79
 # image, sound and hitmask  dicts
-IMAGES, SOUNDS, HITMASKS = {}, {}, {}
+IMAGES, SOUNDS, HITMASKS = {}, {}, {} 
 
 # list of all possible players (tuple of 3 positions of flap)
 PLAYERS_LIST = (
@@ -47,6 +52,7 @@ PIPES_LIST = (
 )
 
 
+
 try:
     xrange
 except NameError:
@@ -80,6 +86,12 @@ def main():
     IMAGES['message'] = pygame.image.load('assets/sprites/message.png').convert_alpha()
     # base (ground) sprite
     IMAGES['base'] = pygame.image.load('assets/sprites/base.png').convert_alpha()
+    # weapon 
+    IMAGES['weapon'] = pygame.image.load('assets/sprites/ball.png').convert_alpha()
+    # enemy
+    IMAGES['enemy'] = pygame.image.load('assets/sprites/enemy.png').convert_alpha()
+
+
 
     # sounds
     if 'win' in sys.platform:
@@ -179,7 +191,7 @@ def showWelcomeAnimation():
                     (playerx, playery + playerShmVals['val']))
         SCREEN.blit(IMAGES['message'], (messagex, messagey))
         SCREEN.blit(IMAGES['base'], (basex, BASEY))
-
+        
         pygame.display.update()
         FPSCLOCK.tick(FPS)
 
@@ -222,8 +234,42 @@ def mainGame(movementInfo):
     playerFlapAcc =  -9   # players speed on flapping
     playerFlapped = False # True when player flaps
 
+    # player make
+    #player_size = IMAGES['player'].get_rect().size
+    #player_width = player_size[0]
+    #player_height = player_size[1]
+    #player_x_pos = (SCREENWIDTH - player_width) / 2
+    #player_y_pos = SCREENHEIGHT - player_height/2 - 20
+    
+    # weapon make
+    weapon_size = IMAGES['weapon'].get_rect().size
+    weapon_width = weapon_size[0]
+    weapon_height = weapon_size[1]
+    weapon_x_pos = (SCREENWIDTH - weapon_width) / 2
+    weapon_y_pos = SCREENHEIGHT - weapon_height
+    # weapon many times shoting
+    weapons = []
+    # weapon speed
+    weapon_speed = 10
+
+    # enemy make
+    enemy_size = IMAGES['enemy'].get_rect().size
+    enemy_width = enemy_size[0]
+    enemy_height = enemy_size[1]
+    enemy_x_pos = 300
+    enemy_y_pos = random.randint(0, SCREENHEIGHT - enemy_height)
+    
+    # enemy_image (one)
+    enemy_image = [pygame.image.load('assets/sprites/enemy.png').convert_alpha()]
+    # enemy speed
+    enemy_speed = [10]
+    # enemies
+    enemies = []
+
 
     while True:
+
+
         for event in pygame.event.get():
             if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
                 pygame.quit()
@@ -233,7 +279,18 @@ def mainGame(movementInfo):
                     playerVelY = playerFlapAcc
                     playerFlapped = True
                     SOUNDS['wing'].play()
-
+            if event.type == KEYDOWN and (event.key == K_a):
+                weapon_x_pos = playerx 
+                weapon_y_pos = playery
+                weapons.append([weapon_x_pos, weapon_y_pos])
+                
+            if event.type == MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    playerx +=50
+            if event.type == MOUSEBUTTONUP:
+                if event.button == 1:
+                    playerx -=50
+                
 
         # check for crash here
         crashTest = checkCrash({'x': playerx, 'y': playery, 'index': playerIndex},
@@ -249,7 +306,7 @@ def mainGame(movementInfo):
                 'playerVelY': playerVelY,
                 'playerRot': playerRot
             }
-
+        
         # check for score
         playerMidPos = playerx + IMAGES['player'][0].get_width() / 2
         for pipe in upperPipes:
@@ -257,6 +314,7 @@ def mainGame(movementInfo):
             if pipeMidPos <= playerMidPos < pipeMidPos + 4:
                 score += 1
                 SOUNDS['point'].play()
+        
 
         # playerIndex basex change
         if (loopIter + 1) % 3 == 0:
@@ -280,10 +338,12 @@ def mainGame(movementInfo):
         playerHeight = IMAGES['player'][playerIndex].get_height()
         playery += min(playerVelY, BASEY - playery - playerHeight)
 
+
         # move pipes to left
         for uPipe, lPipe in zip(upperPipes, lowerPipes):
             uPipe['x'] += pipeVelX
             lPipe['x'] += pipeVelX
+
 
         # add new pipe when first pipe is about to touch left of screen
         if 3 > len(upperPipes) > 0 and 0 < upperPipes[0]['x'] < 5:
@@ -298,6 +358,7 @@ def mainGame(movementInfo):
 
         # draw sprites
         SCREEN.blit(IMAGES['background'], (0,0))
+
 
         for uPipe, lPipe in zip(upperPipes, lowerPipes):
             SCREEN.blit(IMAGES['pipe'][0], (uPipe['x'], uPipe['y']))
@@ -315,6 +376,72 @@ def mainGame(movementInfo):
         playerSurface = pygame.transform.rotate(IMAGES['player'][playerIndex], visibleRot)
         SCREEN.blit(playerSurface, (playerx, playery))
 
+        
+        #global last_enemy_spawn_time  # last_enemy_spawn_time을 전역 변수로 선언
+        """
+        # 적 이동 및 화면에 그리기
+        enemy_x_pos = 300
+        enemy_y_pos = random.randint(0, SCREENHEIGHT - 60)
+        enemies.append([enemy_x_pos, enemy_y_pos])
+        print(enemies)
+
+        
+        enemies = [[e[0] - enemy_speed, e[1]] for e in enemies]
+
+        for enemy_x_pos, enemy_y_pos in enemies:
+            SCREEN.blit(IMAGES['enemy'], (enemy_x_pos, enemy_y_pos))
+        """
+            
+        # enemy move
+        enemy_x_pos -= enemy_speed[0] # enemy_speed = 10
+         
+        if enemy_x_pos < -20:
+            enemy_x_pos = 300
+            enemy_y_pos = random.randint(0, SCREENHEIGHT - 50)
+
+        SCREEN.blit(IMAGES['enemy'], (enemy_x_pos, enemy_y_pos))
+        
+
+        # weapon move
+        weapons = [[w[0] + weapon_speed, w[1]] for w in weapons]
+        # weapon ceiling remove
+        weapons = [[w[0], w[1]] for w in weapons if w[0] < SCREENWIDTH]
+        
+        for weapon_x_pos, weapon_y_pos in weapons:
+            SCREEN.blit(IMAGES['weapon'], (weapon_x_pos, weapon_y_pos))
+
+
+        #if enemy_x_pos and enemy_y_pos == weapon_x_pos and weapon_y_pos:
+        #    remove
+        enemies_to_remove = []
+        weapons_to_remove = []
+
+        # Check for collision between enemies and weapons
+        weapon_rect = pygame.Rect(weapon_x_pos, weapon_y_pos, weapon_width, weapon_height)
+        enemy_rect = pygame.Rect(enemy_x_pos, enemy_y_pos, enemy_width, enemy_height)
+
+        if weapon_rect.colliderect(enemy_rect):
+            enemies_to_remove.append((enemy_x_pos, enemy_y_pos))
+            weapons_to_remove.append((weapon_x_pos, weapon_y_pos))
+
+        # Remove enemies and weapons
+        for enemies in enemies_to_remove:
+            enemy_x_pos = 300
+            enemy_y_pos = random.randint(0, SCREENHEIGHT - 50)
+            score +=1
+            SOUNDS['point'].play()
+                    
+        for weapon_pos in weapons_to_remove:
+            for weapon_pos in weapons:
+                    weapons.remove(weapon_pos)
+
+        #for enemy in enemies_to_remove:
+        #        enemies.remove(enemy)
+
+
+        #for weapon in weapons_to_remove:
+        #        weapons.remove(weapon)
+        
         pygame.display.update()
         FPSCLOCK.tick(FPS)
 
@@ -372,8 +499,6 @@ def showGameOverScreen(crashInfo):
         showScore(score)
 
         
-
-
         playerSurface = pygame.transform.rotate(IMAGES['player'][1], playerRot)
         SCREEN.blit(playerSurface, (playerx,playery))
         SCREEN.blit(IMAGES['gameover'], (50, 180))
