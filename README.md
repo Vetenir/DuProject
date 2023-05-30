@@ -1,55 +1,42 @@
-FlapPyBird
-===============
+# 2023 DU-OSSPROJECT
 
-A Flappy Bird Clone made using [python-pygame][pygame]
+* 파이썬의 개임개발 도구인 [pygame](https://www.pygame.org)을 활용한 FlapPyBird 기능 추가
 
-Setup (as tested on MacOS)
----------------------------
+## 팀원 소개
 
-1. Install Python 3.x (recommended) 2.x from [here](https://www.python.org/download/releases/) (Or use your preffered package manager)
+* 팀원 대구대학교 컴퓨터공학과 김정환
+* 팀원 대구대학교 컴퓨터공학과 김도훈
 
-1. Install [pipenv]
+## 실행 방법 
+1. [python](https://www.python.org/),[pygame](https://www.pygame.org),[pycharm](https://www.jetbrains.com/ko-kr/pycharm/download/)설치
 
-1. _Optional_: Install PyGame 1.9.x from [here](http://www.pygame.org/download.shtml)
+2. 깃허브 저장소를 로컬저장소에 클론 후 실행 
+아래는 Mac OS 사용자의 실행 방법
+```
+$git clone https://github.com/Vetenir/DuProject.git
+python3 flappy_final.py
+```
+윈도우는 클론한 폴더를 pycharm으로 열어 실행가능
+자세한 내용은 [wiki](https://github.com/Vetenir/DuProject/wiki)를 참고해주세요.
 
-   On MacOS, pipenv will install PyGame, please check how to install on your Linux/Windows machines
+## 게임설명
 
-1. Clone the repository:
+* UFO가 장애물을 피하면서 점수를 얻는 게임이다.
 
-   ```bash
-   $ git clone https://github.com/sourabhv/FlapPyBird
-   ```
+* 조작법은 <kbd>space</kbd>키나 <kbd>&uarr;</kbd>키를 통해 UFO가 장애물에 닿지 않도록 합니다
 
-   or download as zip and extract.
+* 게임을 종료하려면 <kbd>Esc</kbd>를 누르면 종료됩니다.
 
-1. In the root directory run
+## 업데이트 내용
 
-   ```bash
-   $ pipenv install
-   $ pipenv run python flappy.py
-   ```
+* v1.1.0 마우스 좌클릭 시 UFO가 앞으로 이동합니다.
 
-1. Use <kbd>&uarr;</kbd> or <kbd>Space</kbd> key to play and <kbd>Esc</kbd> to close the game.
+* v2.0.0 기존 장애물과 player 이미지를 수정, 유령과 공격 이미지를 추가하였습니다.
 
-(For x64 windows, get exe [here](http://www.lfd.uci.edu/~gohlke/pythonlibs/#pygame))
+* v2.1.0 UFO가 장애물에 닿으면 장애물이 파과되는 furyMode를 추가하고 <kbd>A</kbd>키로 유령을 공격하여 추가점수를 얻을수 있습니다.
 
-Notable forks
--------------
-- [FlapPyBlink Blink to control the bird](https://github.com/sero583/FlappyBlink)
-- [FlappyBird Fury Mode](https://github.com/Cc618/FlapPyBird)
-- [FlappyBird Model Predictive Control](https://github.com/philzook58/FlapPyBird-MPC)
-- [FlappyBird OpenFrameworks Port](https://github.com/TheLogicMaster/ofFlappyBird)
-- [FlappyBird On Quantum Computing](https://github.com/WingCode/QuFlapPyBird)
+## 참고한 Repository
 
-Made something awesome from FlapPyBird? Add it to the list :)
+* [flapPybird](https://github.com/Cc618/FlapPyBird.git)
+* [FlappyBird Fury Mode](https://github.com/Cc618/FlapPyBird)
 
-
-Demo
-----------
-
-https://user-images.githubusercontent.com/2307626/130682424-9254b32d-efe0-406e-a6ea-3fb625a2df5e.mp4
-
-
-
-[pygame]: http://www.pygame.org
-[pipenv]: https://pipenv.readthedocs.io/en/latest/
