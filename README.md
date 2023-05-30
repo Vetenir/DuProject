@@ -39,4 +39,3 @@ python3 flappy_final.py
 
 * [flapPybird](https://github.com/Cc618/FlapPyBird.git)
 * [FlappyBird Fury Mode](https://github.com/Cc618/FlapPyBird)
-
